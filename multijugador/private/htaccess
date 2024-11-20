@@ -1,0 +1,7 @@
+
+# Denegar acceso a todos los archivos de esta carpeta
+Order Allow,Deny
+Deny from all
+
+# Opcional: puedes personalizar un mensaje de error si alguien intenta acceder
+ErrorDocument 403 "Acceso denegado"

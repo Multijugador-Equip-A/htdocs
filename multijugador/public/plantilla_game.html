@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Joc Multijugador - Batalla de paraula</title>
+    <style>
+        #joc {
+            display: none;
+        }
+
+        #areaDeJoc {
+            width: 640px;
+            height: 200px;
+            background-color: lightgray;
+            position: relative;
+            margin: 0 auto;
+            border: 2px solid black;
+            font-family: Arial;
+        }
+        
+        #time_left {
+            position: center;
+            width: 0px;
+            top: 0px;
+            padding-left: 50%;
+            padding-top: 30px;
+            padding-bottom: 35px;
+            padding-right: 50%;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        #life_player1 {
+            position: absolute;
+            top: 100px;
+            left: 0px;
+            font-size: 18px;
+            text-align: center;
+            background-color: #38f5ff;
+            color: black;
+            padding-left: 30px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-right: 185.5px;
+        }
+
+        #life_player2 {
+            position: absolute;
+            top: 100px;
+            right: 0px;
+            font-size: 18px;
+            text-align: center;
+            background-color: #ff4238;
+            color: black;
+            padding-right: 30px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 185.5px;
+        }
+
+        #zonaParaula {
+            position: absolute;
+            width: 100%;
+            bottom: 15px;
+            left: 0px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        #seccioParaula {
+            font-size: 30px;
+            background-color: blanchedalmond;
+            padding-left: 30px;
+            padding-right: 30px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            text-align: center;
+        }
+        #healthBarContainer1 {
+            position: absolute;
+            top: 90px;
+            left: 30px;      
+            width: 200px;    
+            background-color: #ddd;
+            border: 1px solid #333;
+            border-radius: 5px;
+            height: 20px;
+        }
+
+        #healthBarContainer2 {
+            position: absolute;
+            top: 90px;
+            right: 30px;
+            width: 200px;
+            background-color: #ddd;
+            border: 1px solid #333;
+            border-radius: 5px;
+            height: 20px;
+        }
+
+        /* Actual health bar */
+        .health-bar {
+            height: 100%;
+            background-color: green;   /* Initial color for full health */
+            width: 100%;               /* Initially full width (100%) */
+            border-radius: 5px;
+            transition: width 0.3s;    /* Smooth transition when health changes */
+        }
+
+        #currentWord{
+            user-select: none;
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            text-align: center;
+        }
+        #buttonContainer {
+            display: flex;
+            justify-content: center; /* Center buttons horizontally */
+            gap: 15px; /* Space between buttons */
+            margin-top: 20px;
+        }
+        button {
+            width: 150px; /* Make the buttons wider */
+            height: 50px; /* Make the buttons taller */
+            font-size: 18px; /* Increase font size */
+            margin: 10px; /* Add some space between buttons */
+            border-radius: 8px; /* Rounded corners */
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none; /* Remove default border */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transition */
+        }
+        /* Hover and Active effects */
+        button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        button:active {
+            transform: scale(0.95); /* Slightly shrink on click */
+        }
+
+        /* Disable button styling */
+        button:disabled {
+            background-color: #ccc; /* Gray background when disabled */
+            color: #666; /* Darker text */
+            cursor: not-allowed; /* Show not-allowed cursor */
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="estat">Connectant al joc...</h1>
+    <div id="joc">
+        <div id="areaDeJoc">
+            <h2 id="time_left">00</h2>
+            <div id="healthBarContainer1">
+                <div id="healthBar1" class="health-bar"></div>
+            </div>
+            <h2 id="life_player1">Jugador 1: <span id="vidaJugador1"></span></h2>
+            <div id="healthBarContainer2">
+                <div id="healthBar2" class="health-bar"></div>
+            </div>
+            <h2 id="life_player2">Jugador 2: <span id="vidaJugador2"></span></h2>
+            </div>
+            <h3 id="currentWord">Paraula: <span id="displayWord">Exemple</span></h3>
+            <div id="zonaParaula">
+                <input 
+                type="text" 
+                id="seccioParaula"
+                placeholder="text exemple"
+                onkeydown="verificaParaula(this)"
+                />
+            </div>
+            <div id="buttonContainer">
+                <button id="AttackButton" disabled>Atac</button>
+                <button id="HealButton" disabled>Cura</button>
+                <button id="BlockButton" disabled>Bloqueig</button>
+                <button id="BuffButton" disabled>Buff</button>
+            </div>
+        </div>
+        
+    </div>
+</body>
+<script src="./game.js"></script>
+</html>

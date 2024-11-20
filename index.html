@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botones Material</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+
+    <style>
+        .btn-large {
+            margin: 10px;
+            width: 200px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+
+    <script>
+        function redirectToFoundryVTT() {
+            const url = new URL(window.location.href);
+            url.port = 30000;
+            window.location.href = url.href;
+        }
+    </script>
+</head>
+
+<body class="container center-align">
+
+    <h3>The mejuts</h3>
+
+    <button class="btn waves-effect waves-light btn-large teal" type="button"
+        onclick="window.location.href='./multijugador/public/'">
+        Multijugador
+    </button>
+
+    <button class="btn waves-effect waves-light btn-large red lighten-1 hidden" type="button"
+        onclick="window.location.href='./modlist'">
+        Modlist
+    </button>
+
+    <button class="btn waves-effect waves-light btn-large amber darken-3 hidden" type="button"
+        onclick="window.location.href='./generadorDeContrassenyes'">
+        Generador de Contrasenyes
+    </button>
+
+    <button class="btn waves-effect waves-light btn-large amber darken-3 hidden" type="button"
+        onclick="redirectToFoundryVTT()">
+        FoundryVTT
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+
+</html>

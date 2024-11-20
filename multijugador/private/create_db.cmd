@@ -1,0 +1,6 @@
+sqlite3 games.db "CREATE TABLE games (game_id TEXT PRIMARY KEY, player1 TEXT, player2 TEXT, life_player1 INTEGER DEFAULT 10, life_player2 INTEGER DEFAULT 10, temps1 INTEGER DEFAULT NULL, temps2 INTEGER DEFAULT NULL, latencia1 INTEGER DEFAULT NULL, latencia2 INTEGER DEFAULT NULL, tempsPAnterior1 INTEGER DEFAULT NULL, tempsPAnterior2 INTEGER DEFAULT NULL, paraula_visible INTEGER DEFAULT 0, next_word_time INTEGER DEFAULT NULL, hihaescriptor INTEGER DEFAULT 0, escriptor INTEGER DEFAULT 0, winner TEXT, word TEXT, player1_damage INTEGER DEFAULT 2, player2_damage INTEGER DEFAULT 2);"
+sqlite3 users.db "CREATE TABLE IF NOT EXISTS `users` (`user_id` INTEGER PRIMARY KEY, `user_name` varchar(63), `user_password` varchar(255), `user_email` varchar(255));"
+sqlite3 users.db "ALTER TABLE `users` ADD COLUMN `reset_token_hash` VARCHAR(64) DEFAULT NULL;"
+sqlite3 users.db "ALTER TABLE `users` ADD COLUMN `time_token_expires_at` DATE DEFAULT NULL;"
+sqlite3 users.db "CREATE UNIQUE INDEX `user_name_UNIQUE` ON `users` (`user_name` ASC);"
+sqlite3 users.db "ALTER TABLE `users` ADD COLUMN `is_verified` INTEGER DEFAULT 0;"

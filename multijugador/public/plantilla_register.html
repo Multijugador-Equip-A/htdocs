@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ca" color-mode="user">
+
+<head>
+    <!-- dades tècniques de la pàgina -->
+    <meta charset="utf-8">
+    <title>{SITE_NAME} :: Registre nou usuari</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- per a dispositius mòbils -->
+    <meta name="author" content="Antonio Bueno (UdG)">
+    <!-- estètica de la pàgina -->
+    <link rel="icon" href="/favicon.png">
+    <link rel="stylesheet" href="mvp.css">
+    <link rel="stylesheet" href="el_meu.css">
+    <!-- per afegir interactivitat a la pàgina -->
+    <script defer src="el_meu.js"></script>
+</head>
+
+<body>
+    <!-- contingut visible de la pàgina -->
+    <main>
+        <header>
+            <h1><a href="/">{SITE_NAME}</a></h1>
+            <div>{FEEDBACK}</div>
+        </header>
+        <section>
+            <form method="{METHOD}" action="{PHP_SELF}">
+                <header>
+                    <h2>Crea un nou compte</h2>
+                </header>
+                <label for="register_username">Nom d'usuari</label>
+                <input id="register_username" type="text" name="user_name" value="{REGISTER_USERNAME}" />
+                <label for="register_password">Contrasenya</label>
+                <input id="register_password" type="password" name="user_password" />
+                <label id="pwned_password"></label>
+                <label for="register_email">Email</label>
+                <input placeholder="El teu Email" name="user_email" type="email" tabindex="2">
+                <p><br/><br/><img src="captcha.php?rand=<?php echo rand(); ?>" id='captcha_image'></p>
+                <label for="captcha_verification">Captcha</label>
+                <input type="text" name="captcha" />
+                <p>No pots llegir la imatge?
+                <a href='javascript: refreshCaptcha();'>Fes click aqui</a> per refrescar</p>
+                <input type="submit" name="register" value="Crear compte" />
+            </form>
+                
+        </section>
+        <section>
+            <div>
+                <a href="{LOGIN_LOGOUT_URL}">{LOGIN_LOGOUT_TEXT}</a>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
