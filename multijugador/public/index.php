@@ -158,7 +158,7 @@ if (isset($parameters['page'])) {
             $mail->isHTML(true);                          
             $mail->Subject = 'Recuperacio de contrasenya';  
             $mail->Body    = <<<END
-            Verificar el correu fes click  <a href="http://localhost:8000/enter_verificationToken.php?token=$token">aqui</a>.
+            Verificar el correu fes click  <a href="http://multijugador/public/enter_verificationToken.php?token=$token">aqui</a>.
             END;
 
             // Send the email
@@ -249,7 +249,7 @@ if (isset($parameters['page'])) {
         //         $mail->isHTML(true);                          
         //         $mail->Subject = 'Recuperacio de contrasenya';  
         //         $mail->Body    = <<<END
-        //         Verificar el correu fes click  <a href="http://localhost:8000/enter_verificationToken.php?token=$token">aqui</a>.
+        //         Verificar el correu fes click  <a href="http://multijugador/public/enter_verificationToken.php?token=$token">aqui</a>.
         //         END;
 
         //         // Send the email
