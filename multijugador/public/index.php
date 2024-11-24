@@ -124,6 +124,7 @@ if (isset($parameters['page'])) {
             $token = bin2hex(random_bytes(16)); // Generate random token
             $token_hash = hash("sha256", $token); // Hash the token
             $expiry = date("Y-m-d H:i:s", time() + 30 * 60); // Set expiry time
+            $email = $_POST["user_email"];
             
             // Update database with reset token
             $sql = 'UPDATE users SET reset_token_hash = :reset_token_hash, time_token_expires_at = :time_token_expires_at WHERE user_email = :user_email';
@@ -132,7 +133,11 @@ if (isset($parameters['page'])) {
             $query->bindValue(':time_token_expires_at', $expiry);
             $query->bindValue(':user_email', $info['user_email']);
             $query->execute();
-    
+
+            require 'phpmailer/src/Exception.php';
+            require 'phpmailer/src/PHPMailer.php';
+            require 'phpmailer/src/SMTP.php';
+
             // Sending verification email
             $mail = new PHPMailer(true);
             //Server settings
@@ -158,7 +163,18 @@ if (isset($parameters['page'])) {
 
             // Send the email
             $mail->send();
-        }
+
+            setcookie('username', $info['user_name'], time() + (100000), "/"); 
+            $configuration['{FEEDBACK}'] = 'Creat el compte <b>' . htmlentities($info['user_name']) . '</b>';
+            $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar sessió';
+            $configuration['{DISPLAY_BUTTON}'] = 'block';
+            $configuration['{NEXT_TEXT}'] = 'Avança';
+            $configuration['{DISPLAY_REGISTER}'] = 'none';
+            $configuration['{NEXT_URL}'] = '/multijugador/public/?page=home';
+        }else {
+                $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
+                    . htmlentities($info['user_name']) . '</b></mark>';
+            }
 
         // try {
         //     $db = new PDO($db_connection);
