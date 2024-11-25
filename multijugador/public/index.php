@@ -116,7 +116,6 @@ if (isset($parameters['page'])) {
         }
     }
     else { //There is a username, a password and the Captcha has been filled correctly
-        $template = 'login';
         // Use password_hash to securely hash the password
         $hashed_password = password_hash($info['user_password'], PASSWORD_DEFAULT);
         $db = new PDO($db_connection);
@@ -183,87 +182,6 @@ if (isset($parameters['page'])) {
                 $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
                     . htmlentities($info['user_name']) . '</b></mark>';
             }
-
-        // try {
-        //     $db = new PDO($db_connection);
-        //         $sql = 'INSERT INTO users (user_name, user_password, user_email) VALUES (:user_name, :user_password, :user_email)';
-        //         $query = $db->prepare($sql);
-        //         $query->bindValue(':user_name', $info['user_name']);
-        //         $query->bindValue(':user_password', $hashed_password); 
-        //         $query->bindValue(':user_email', $info['user_email']);
-
-        //     if ($query->execute()) {
-        //         setcookie('username', $info['user_name'], time() + (100000), "/"); 
-        //         $configuration['{FEEDBACK}'] = 'Creat el compte <b>' . htmlentities($info['user_name']) . '</b>';
-        //         $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar sessió';
-        //         $configuration['{DISPLAY_BUTTON}'] = 'block';
-        //         $configuration['{NEXT_TEXT}'] = 'Avança';
-        //         $configuration['{DISPLAY_REGISTER}'] = 'none';
-        //         $configuration['{NEXT_URL}'] = '/?page=home';
-        //     } else {
-        //         $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
-        //             . htmlentities($info['user_name']) . '</b></mark>';
-        //     }
-        // } catch (PDOException $e) {
-        //     // Handle database error (optional logging can be added here)
-        //     $configuration['{FEEDBACK}'] = "<mark>ERROR: Hi ha hagut un problema amb la base de dades.</mark>";
-        // }
-
-        // //required files
-        // require 'phpmailer/src/Exception.php';
-        // require 'phpmailer/src/PHPMailer.php';
-        // require 'phpmailer/src/SMTP.php';
-
-        // //Create an instance; passing `true` enables exceptions
-        // if (isset($_POST["register"])) {
-
-        //     $email = $_POST["user_email"];
-        //     $token = bin2hex(random_bytes(16)); // Generate random token
-        //     $token_hash = hash("sha256", $token); // Hash the token
-        //     $expiry = date("Y-m-d H:i:s", time() + 30 * 60); // Set expiry 30 minutes from now
-            
-        //     // Establish database connection
-        //     $db_connection = 'sqlite:../private/users.db'; // Ensure the correct path to the SQLite database
-        //     $db = new PDO($db_connection);
-            
-        //     // Correct SQL query to update reset_token_hash and time_token_expires_at
-        //     $sql = 'UPDATE users SET reset_token_hash = :reset_token_hash, time_token_expires_at = :time_token_expires_at WHERE user_email = :user_email';
-            
-        //     $query = $db->prepare($sql); // Prepare the query
-        //     $query->bindValue(':reset_token_hash', $token_hash); // Bind token hash
-        //     $query->bindValue(':time_token_expires_at', $expiry); // Bind token expiry time
-        //     $query->bindValue(':user_email', $email); // Bind email
-            
-        //     $query->execute(); // Execute the query
-            
-        //     if ($query->rowCount() > 0) {  // Use rowCount to check for affected rows
-        //         $mail = new PHPMailer(true);
-
-        //         //Server settings
-        //         $mail->isSMTP();                                
-        //         $mail->Host       = 'smtp.gmail.com';           
-        //         $mail->SMTPAuth   = true;                       
-        //         $mail->Username   = 'multijugadorgddv@gmail.com';  
-        //         $mail->Password   = 'rixgizmjndqnbqjn';          
-        //         $mail->SMTPSecure = 'ssl';                      
-        //         $mail->Port       = 465;                        
-
-        //         //Recipients
-        //         $mail->setFrom('multijugadorgddv@gmail.com', 'Treball_1');
-        //         $mail->addAddress($email);  
-        //         $mail->addReplyTo('multijugadorgddv@gmail.com', 'Treball_1'); 
-
-        //         //Content
-        //         $mail->isHTML(true);                          
-        //         $mail->Subject = 'Recuperacio de contrasenya';  
-        //         $mail->Body    = <<<END
-        //         Verificar el correu fes click  <a href="http://enter_verificationToken.php?token=$token">aqui</a>.
-        //         END;
-
-        //         // Send the email
-        //         $mail->send();
-        //     }
-        // }
     }
 
 } else if (isset($info['login'])) {
@@ -280,7 +198,7 @@ if (isset($parameters['page'])) {
     if ($result_row) {
         // Verify the password with the hashed password stored in the database
         if (password_verify($info['user_password'], $result_row->user_password)) {
-            if ($result_row->is_verified){
+            if ($result_row->is_verified == 1){
                 // Set a cookie for the logged-in user
                 setcookie('username', $info['user_name'], time() + (100000), "/"); 
                 $configuration['{FEEDBACK}'] = '"Sessió" iniciada com <b>' . htmlentities($info['user_name']) . '</b>';
