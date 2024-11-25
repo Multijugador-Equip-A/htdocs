@@ -54,7 +54,7 @@ if (strtotime($user["time_token_expires_at"]) <= time()) {
 </head>
 
 <body>
-    <h1>Verrificat</h1>
+    <h1>Verificat</h1>
     <form method="post" action="process_verificarico.php">
 
     <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
