@@ -86,13 +86,20 @@ if (isset($parameters['page'])) {
         $configuration['{FEEDBACK}'] = '<mark>ERROR: Has d\'introduir un nom d\'usuari</mark>';
         $configuration['{REGISTER_USERNAME}'] = htmlentities($info['user_name']);
         $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Ja tinc un compte';
-    } 
+    }
+    else if (strlen($info['user_email']) == '') { // No email entered
+        $template = 'register'; // Stay on the registration page
+        $configuration['{FEEDBACK}'] = '<mark>ERROR: Has d\'introduir un email per poder crear el compte</mark>';
+        $configuration['{REGISTER_USERNAME}'] = htmlentities($info['user_name']);
+        $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Ja tinc un compte';
+    }
     else if (strlen($info['user_password']) < $min_password_length) { // Password too short
         $template = 'register'; // Stay on the registration page
         $configuration['{FEEDBACK}'] = '<mark>ERROR: La contrasenya ha de tenir almenys ' . $min_password_length . ' caràcters.</mark>';
         $configuration['{REGISTER_USERNAME}'] = htmlentities($info['user_name']);
         $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Ja tinc un compte';
-    } else if (isset($info['captcha']) && ($info['captcha'] == '' || $_SESSION['captcha'] != $info['captcha'])) { //Captcha requirements not fulfilled
+    }
+    else if (isset($info['captcha']) && ($info['captcha'] == '' || $_SESSION['captcha'] != $info['captcha'])) { //Captcha requirements not fulfilled
         if ($info['captcha'] == '') { //Nothing in Captcha textbox
             // Stay on the registration page and show an error message
             $template = 'register'; // Stay on the registration page
