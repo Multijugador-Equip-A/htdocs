@@ -54,5 +54,5 @@ if ($query->execute()) {
 }
 
 // Redirect to the desired page
-header("Location: index.php");
+header("Location: /?page=login");
 exit(); // Ensures no further processing is done

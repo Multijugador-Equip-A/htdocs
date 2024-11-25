@@ -76,5 +76,5 @@ if ($query->execute()) {
     die("Failed to update password");
 }
 
-header("Location: index.php");
+header("Location: /?page=login");
 exit(); // Ensures no further processing is done

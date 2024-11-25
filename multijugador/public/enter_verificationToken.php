@@ -34,10 +34,15 @@ if ($user === null) {
 if (strtotime($user["time_token_expires_at"]) <= time()) {
     die("Token has expired");
 }
-echo '<h1>Verificant ' . htmlentities($user["user_name"]) . '</h1>';
+
+// Preparar el contingut dinàmic
+$userName = htmlentities($user["user_name"]);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="ca" color-mode="user">
+
 
 <head>
     <!-- dades tècniques de la pàgina -->
@@ -51,15 +56,44 @@ echo '<h1>Verificant ' . htmlentities($user["user_name"]) . '</h1>';
     <link rel="stylesheet" href="el_meu.css">
     <!-- per afegir interactivitat a la pàgina -->
     <script defer src="el_meu.js"></script>
+    <style>
+        /* Centrar el contingut del main */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centrar horitzontalment */
+            padding-top: 20px; /* Distància des de la part superior */
+            text-align: center;
+        }
+
+        /* Centrar el botó dins del formulari */
+        form {
+            display: flex;
+            flex-direction: column; /* Col·locar els elements del formulari en columna */
+            align-items: center; /* Centrar horitzontalment els elements del formulari */
+            margin-top: 20px; /* Espai entre el títol i el formulari */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+    <script defer src="el_meu.js"></script>
+    
 </head>
 
 <body>
-    <form method="post" action="process_verificarico.php">
-
-    <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
-
-<button>Verificar</button>
-</form>
+    <main>
+        <header>
+            <h1>Verificant <?= $userName ?></h1>
+        </header>
+        <form method="post" action="process_verificarico.php">
+            <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+            <button>Verificar</button>
+        </form>
+    </main>
 </body>
 
 </html>
