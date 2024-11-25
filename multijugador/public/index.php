@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 
 // defaults
 session_start();
-$template = 'home';
+$template = 'login';
 $db_connection = 'sqlite:..\private\users.db';
 $configuration = array(
     '{FEEDBACK}'          => '',
@@ -164,7 +164,7 @@ if (isset($parameters['page'])) {
 
                 //Content
             $mail->isHTML(true);                          
-            $mail->Subject = 'Verificació de Correu';  
+            $mail->Subject = 'Verificacio de Correu';  
             $mail->Body    = <<<END
             Per verificar el correu de $name fes click <a href="http://multijugador.duckdns.org/enter_verificationToken.php?token=$token">aqui</a>.
             END;
@@ -172,13 +172,13 @@ if (isset($parameters['page'])) {
             // Send the email
             $mail->send();
 
-            setcookie('username', $info['user_name'], time() + (100000), "/"); 
-            $configuration['{FEEDBACK}'] = 'Creat el compte <b>' . htmlentities($info['user_name']) . '</b>';
-            $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar sessió';
-            $configuration['{DISPLAY_BUTTON}'] = 'block';
-            $configuration['{NEXT_TEXT}'] = 'Avança';
-            $configuration['{DISPLAY_REGISTER}'] = 'none';
-            $configuration['{NEXT_URL}'] = '/?page=home';
+            // setcookie('username', $info['user_name'], time() + (100000), "/"); 
+            // $configuration['{FEEDBACK}'] = 'Creat el compte <b>' . htmlentities($info['user_name']) . '</b>';
+            // $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar sessió';
+            // $configuration['{DISPLAY_BUTTON}'] = 'block';
+            // $configuration['{NEXT_TEXT}'] = 'Avança';
+            // $configuration['{DISPLAY_REGISTER}'] = 'none';
+            // $configuration['{NEXT_URL}'] = '/?page=home';
         }else {
                 $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
                     . htmlentities($info['user_name']) . '</b></mark>';
