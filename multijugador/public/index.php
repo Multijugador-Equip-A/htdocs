@@ -139,6 +139,7 @@ if (isset($parameters['page'])) {
             $query->bindValue(':reset_token_hash', $token_hash);
             $query->bindValue(':time_token_expires_at', $expiry);
             $query->bindValue(':user_email', $info['user_email']);
+            $query->bindValue(':user_name', $name);
             $query->execute();
 
             require 'phpmailer/src/Exception.php';
@@ -163,9 +164,9 @@ if (isset($parameters['page'])) {
 
                 //Content
             $mail->isHTML(true);                          
-            $mail->Subject = 'Recuperacio de contrasenya';  
+            $mail->Subject = 'Verificació de Correu';  
             $mail->Body    = <<<END
-            Verificar el correu fes click  <a href="http://multijugador.duckdns.org/enter_verificationToken.php?token=$token">aqui</a>.
+            Per verificar el correu de $name fes click <a href="http://multijugador.duckdns.org/enter_verificationToken.php?token=$token">aqui</a>.
             END;
 
             // Send the email
