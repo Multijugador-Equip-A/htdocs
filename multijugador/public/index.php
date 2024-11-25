@@ -132,6 +132,7 @@ if (isset($parameters['page'])) {
             $token_hash = hash("sha256", $token); // Hash the token
             $expiry = date("Y-m-d H:i:s", time() + 30 * 60); // Set expiry time
             $email = $_POST["user_email"];
+            $name = $_POST["user_name"];
             
             // Update database with reset token
             $sql = 'UPDATE users SET reset_token_hash = :reset_token_hash, time_token_expires_at = :time_token_expires_at WHERE user_email = :user_email';
@@ -139,7 +140,6 @@ if (isset($parameters['page'])) {
             $query->bindValue(':reset_token_hash', $token_hash);
             $query->bindValue(':time_token_expires_at', $expiry);
             $query->bindValue(':user_email', $info['user_email']);
-            $query->bindValue(':user_name', $name);
             $query->execute();
 
             require 'phpmailer/src/Exception.php';
