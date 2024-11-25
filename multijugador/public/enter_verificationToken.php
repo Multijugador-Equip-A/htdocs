@@ -54,7 +54,6 @@ echo '<h1>Verificant ' . htmlentities($user["user_name"]) . '</h1>';
 </head>
 
 <body>
-    <h1>Verificant</h1>
     <form method="post" action="process_verificarico.php">
 
     <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
