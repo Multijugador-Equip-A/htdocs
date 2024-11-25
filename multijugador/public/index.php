@@ -11,28 +11,28 @@ $db_connection = 'sqlite:..\private\users.db';
 $configuration = array(
     '{FEEDBACK}'          => '',
     '{LOGIN_LOGOUT_TEXT}' => 'Identificar-me',
-    '{LOGIN_LOGOUT_URL}'  => '/multijugador/public/?page=login',
+    '{LOGIN_LOGOUT_URL}'  => '/?page=login',
     '{METHOD}'            => 'POST',
-    '{REGISTER_URL}'      => '/multijugador/public/?page=register',
+    '{REGISTER_URL}'      => '/?page=register',
     '{SITE_NAME}'         => 'La meva pàgina',
     '{DISPLAY_BUTTON}'    => 'none',
-    '{NEXT_URL}'          => '/multijugador/public/?page=next',
+    '{NEXT_URL}'          => '/?page=next',
     '{NEXT_NEXT}'         => 'none',
     '{GIF}'               => 'none',
     '{DISPLAY_REGISTER}'  => '',
-    '{RECOVER_PASSWORD_URL}'  => '/multijugador/public/?page=recupPassword',
+    '{RECOVER_PASSWORD_URL}'  => '/?page=recupPassword',
     '{PHP_SELF}'          => '<?php $_PHP_SELF ?>',
-    '{PASSWORD_CHANGED}'  => '/multijugador/public/?page=correuEnviat',
+    '{PASSWORD_CHANGED}'  => '/?page=correuEnviat',
     '{PASSWORD_CHANGED_TEXT}' => 'none',
     '{GAME_TEXT}' => 'GAME',
-    '{GAME_URL}'  => '/multijugador/public/?page=game'
+    '{GAME_URL}'  => '/?page=game'
 );
 
 // Check if the user is already logged in via cookie
 if (isset($_COOKIE['username'])) {
     $configuration['{FEEDBACK}'] = 'Sessió oberta com <b>' . htmlentities($_COOKIE['username']) . '</b>';
     $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
-    $configuration['{LOGIN_LOGOUT_URL}'] = '/multijugador/public/?page=logout';
+    $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
 }
 
 // parameter processing
@@ -55,7 +55,7 @@ if (isset($parameters['page'])) {
         setcookie('username', '', time() - 3600, "/"); // Expire the cookie
         $configuration['{FEEDBACK}'] = 'Sessió tancada.';
         $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Identificar-me';
-        $configuration['{LOGIN_LOGOUT_URL}'] = '/multijugador/public/?page=login';
+        $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=login';
     } else if ($parameters['page'] == 'next') {
         $template = 'next';
         // If the user is found, verify the password
@@ -63,10 +63,10 @@ if (isset($parameters['page'])) {
             
                 $configuration['{FEEDBACK}'] = 'Sessió oberta com <b>' . htmlentities($_COOKIE['username']) . '</b>';
                 $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
-                $configuration['{LOGIN_LOGOUT_URL}'] = '/multijugador/public/?page=logout';
+                $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
                 $configuration['{DISPLAY_BUTTON}'] = 'block';
                 $configuration['{NEXT_TEXT}'] = 'Torna a inici';
-                $configuration['{NEXT_URL}'] = '/multijugador/public/?';
+                $configuration['{NEXT_URL}'] = '/?';
                 $configuration['{GIF}'] = './recursos/patata.gif';
             
         } else {
@@ -87,7 +87,7 @@ if (isset($parameters['page'])) {
         $configuration['{REGISTER_USERNAME}'] = htmlentities($info['user_name']);
         $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Ja tinc un compte';
     }
-    else if (strlen($info['user_email']) == '') { // No email entered
+    else if (!isset($info['user_email']) || empty(trim($info['user_email']))) { // No email entered
         $template = 'register'; // Stay on the registration page
         $configuration['{FEEDBACK}'] = '<mark>ERROR: Has d\'introduir un email per poder crear el compte</mark>';
         $configuration['{REGISTER_USERNAME}'] = htmlentities($info['user_name']);
@@ -165,7 +165,7 @@ if (isset($parameters['page'])) {
             $mail->isHTML(true);                          
             $mail->Subject = 'Recuperacio de contrasenya';  
             $mail->Body    = <<<END
-            Verificar el correu fes click  <a href="http://multijugador.duckdns.org/multijugador/public/enter_verificationToken.php?token=$token">aqui</a>.
+            Verificar el correu fes click  <a href="http://multijugador.duckdns.org/enter_verificationToken.php?token=$token">aqui</a>.
             END;
 
             // Send the email
@@ -177,7 +177,7 @@ if (isset($parameters['page'])) {
             $configuration['{DISPLAY_BUTTON}'] = 'block';
             $configuration['{NEXT_TEXT}'] = 'Avança';
             $configuration['{DISPLAY_REGISTER}'] = 'none';
-            $configuration['{NEXT_URL}'] = '/multijugador/public/?page=home';
+            $configuration['{NEXT_URL}'] = '/?page=home';
         }else {
                 $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
                     . htmlentities($info['user_name']) . '</b></mark>';
@@ -198,7 +198,7 @@ if (isset($parameters['page'])) {
         //         $configuration['{DISPLAY_BUTTON}'] = 'block';
         //         $configuration['{NEXT_TEXT}'] = 'Avança';
         //         $configuration['{DISPLAY_REGISTER}'] = 'none';
-        //         $configuration['{NEXT_URL}'] = '/multijugador/public/?page=home';
+        //         $configuration['{NEXT_URL}'] = '/?page=home';
         //     } else {
         //         $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
         //             . htmlentities($info['user_name']) . '</b></mark>';
@@ -256,7 +256,7 @@ if (isset($parameters['page'])) {
         //         $mail->isHTML(true);                          
         //         $mail->Subject = 'Recuperacio de contrasenya';  
         //         $mail->Body    = <<<END
-        //         Verificar el correu fes click  <a href="http://multijugador/public/enter_verificationToken.php?token=$token">aqui</a>.
+        //         Verificar el correu fes click  <a href="http://enter_verificationToken.php?token=$token">aqui</a>.
         //         END;
 
         //         // Send the email
@@ -283,9 +283,9 @@ if (isset($parameters['page'])) {
             setcookie('username', $info['user_name'], time() + (100000), "/"); 
             $configuration['{FEEDBACK}'] = '"Sessió" iniciada com <b>' . htmlentities($info['user_name']) . '</b>';
             $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
-            $configuration['{LOGIN_LOGOUT_URL}'] = '/multijugador/public/?page=logout';
+            $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
             $configuration['{DISPLAY_BUTTON}'] = 'block';
-            $configuration['{NEXT_URL}'] = '/multijugador/public/?page=next';
+            $configuration['{NEXT_URL}'] = '/?page=next';
             $configuration['{NEXT_TEXT}'] = 'Avança';
             $configuration['{DISPLAY_REGISTER}'] = 'none';
         } else {
@@ -307,9 +307,9 @@ if (isset($parameters['page'])) {
 else { // home
     
     $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
-    $configuration['{LOGIN_LOGOUT_URL}'] = '/multijugador/public/?page=logout';
+    $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
     $configuration['{DISPLAY_BUTTON}'] = 'block';
-    $configuration['{NEXT_URL}'] = '/multijugador/public/?page=next';
+    $configuration['{NEXT_URL}'] = '/?page=next';
     $configuration['{NEXT_TEXT}'] = 'Avança';
     $configuration['{DISPLAY_REGISTER}'] = 'none';
 }
