@@ -9,7 +9,7 @@ if (!$token) {
 $token_hash = hash("sha256", $token);
 
 // Establish database connection
-$db_connection = 'sqlite:../private/users.db'; // Ensure the correct path to the SQLite database
+$db_connection = 'sqlite:..\private\users.db';
 $db = new PDO($db_connection);
 
 // SQL query to select the user based on the reset token hash
