@@ -116,6 +116,7 @@ if (isset($parameters['page'])) {
         }
     }
     else { //There is a username, a password and the Captcha has been filled correctly
+        $template = 'login';
         // Use password_hash to securely hash the password
         $hashed_password = password_hash($info['user_password'], PASSWORD_DEFAULT);
         $db = new PDO($db_connection);
@@ -279,15 +280,19 @@ if (isset($parameters['page'])) {
     if ($result_row) {
         // Verify the password with the hashed password stored in the database
         if (password_verify($info['user_password'], $result_row->user_password)) {
-            // Set a cookie for the logged-in user
-            setcookie('username', $info['user_name'], time() + (100000), "/"); 
-            $configuration['{FEEDBACK}'] = '"Sessió" iniciada com <b>' . htmlentities($info['user_name']) . '</b>';
-            $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
-            $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
-            $configuration['{DISPLAY_BUTTON}'] = 'block';
-            $configuration['{NEXT_URL}'] = '/?page=next';
-            $configuration['{NEXT_TEXT}'] = 'Avança';
-            $configuration['{DISPLAY_REGISTER}'] = 'none';
+            if ($result_row->is_verified){
+                // Set a cookie for the logged-in user
+                setcookie('username', $info['user_name'], time() + (100000), "/"); 
+                $configuration['{FEEDBACK}'] = '"Sessió" iniciada com <b>' . htmlentities($info['user_name']) . '</b>';
+                $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
+                $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
+                $configuration['{DISPLAY_BUTTON}'] = 'block';
+                $configuration['{NEXT_URL}'] = '/?page=next';
+                $configuration['{NEXT_TEXT}'] = 'Avança';
+                $configuration['{DISPLAY_REGISTER}'] = 'none';
+            } else{
+                $configuration['{FEEDBACK}'] = '<mark>ERROR: Usuari no verificat</mark>';
+            }
         } else {
             // If the password is incorrect
             $configuration['{FEEDBACK}'] = '<mark>ERROR: Usuari desconegut o contrasenya incorrecta</mark>';
