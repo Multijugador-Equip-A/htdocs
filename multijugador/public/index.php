@@ -179,7 +179,6 @@ if (isset($parameters['page'])) {
             // $configuration['{NEXT_TEXT}'] = 'Avança';
             // $configuration['{DISPLAY_REGISTER}'] = 'none';
             // $configuration['{NEXT_URL}'] = '/?page=home';
-            $template = 'logout';
         }else {
                 $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
                     . htmlentities($info['user_name']) . '</b></mark>';
