@@ -34,7 +34,7 @@ if ($user === null) {
 if (strtotime($user["time_token_expires_at"]) <= time()) {
     die("Token has expired");
 }
-
+echo '<h1>Verificant ' . htmlentities($user["user_name"]) . '</h1>';
 ?>
 <!DOCTYPE html>
 <html lang="ca" color-mode="user">
@@ -54,7 +54,7 @@ if (strtotime($user["time_token_expires_at"]) <= time()) {
 </head>
 
 <body>
-    <h1>Verificant $user["user_name"]</h1>
+    <h1>Verificant</h1>
     <form method="post" action="process_verificarico.php">
 
     <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
