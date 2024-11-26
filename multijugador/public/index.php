@@ -171,18 +171,19 @@ if (isset($parameters['page'])) {
 
             // Send the email
             $mail->send();
-
-            // setcookie('username', $info['user_name'], time() + (100000), "/"); 
-            // $configuration['{FEEDBACK}'] = 'Creat el compte <b>' . htmlentities($info['user_name']) . '</b>';
-            // $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar sessió';
-            // $configuration['{DISPLAY_BUTTON}'] = 'block';
-            // $configuration['{NEXT_TEXT}'] = 'Avança';
-            // $configuration['{DISPLAY_REGISTER}'] = 'none';
-            // $configuration['{NEXT_URL}'] = '/?page=home';
         }else {
                 $configuration['{FEEDBACK}'] = "<mark>ERROR: No s'ha pogut crear el compte <b>"
                     . htmlentities($info['user_name']) . '</b></mark>';
             }
+        if (isset($_SERVER['HTTP_COOKIE'])) {
+            $cookies = explode('; ', $_SERVER['HTTP_COOKIE']);
+            foreach ($cookies as $cookie) {
+                $parts = explode('=', $cookie);
+                $name = trim($parts[0]);
+                // Set the cookie with an expiration date in the past
+                setcookie($name, '', time() - 3600, '/');
+            }
+        }
     }
 
 } else if (isset($info['login'])) {
