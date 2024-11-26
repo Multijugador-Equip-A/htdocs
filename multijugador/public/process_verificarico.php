@@ -52,6 +52,15 @@ if ($query->execute()) {
 } else {
     die("Failed to update user verification.");
 }
+if (isset($_SERVER['HTTP_COOKIE'])) {
+    $cookies = explode('; ', $_SERVER['HTTP_COOKIE']);
+    foreach ($cookies as $cookie) {
+        $parts = explode('=', $cookie);
+        $name = trim($parts[0]);
+        // Set the cookie with an expiration date in the past
+        setcookie($name, '', time() - 3600, '/');
+    }
+}
 
 // Redirect to the desired page
 header("Location: /?page=login");
