@@ -118,8 +118,26 @@ switch ($accio) {
             $temps_actual = time();
             if ($joc['player1'] && $joc['player2'] && !$joc['winner']) {
                 $temps_actual = time();
-                
-                if($joc['temps1'] || $joc['temps2']){
+
+                if ($joc['temps1'] && $joc['temps2']) {
+                    if ($joc['temps1'] < $joc['temps2']) {
+                        // El jugador 1 ha estat més ràpid
+                        imprimir(true, $game_id, $db);
+                    } elseif ($joc['temps2'] < $joc['temps1']) {
+                        // El jugador 2 ha estat més ràpid
+                        imprimir(false, $game_id, $db);
+                    } else {
+                        if ($joc['latencia1'] > $joc['latencia2']){
+                            imprimir(true, $game_id, $db);
+                        }
+                        elseif ($joc['latencia1'] < $joc['latencia2']){
+                            imprimir(true, $game_id, $db);
+                        }
+                            
+                    }
+                }
+
+                if($joc['temps1'] || $joc['temps2']) {
                     if($joc['temps1'] && !$joc['temps2']){
                         $periode = $temps_servidor - $joc['temps1'];
                         if($periode > $joc['latencia2']*1.5){
@@ -132,7 +150,7 @@ switch ($accio) {
                             imprimir(false, $game_id, $db);
                         }
                     }
-                }
+                } 
             }
                 
             // Comprovar si hi ha un guanyador
