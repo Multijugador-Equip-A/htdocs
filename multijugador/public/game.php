@@ -154,7 +154,11 @@ switch ($accio) {
             }
 
             if ($joc['winner']) {
-                echo json_encode(['error' => 'Joc finalitzat']);
+                if ($joc['player_id'] == $joc[winner]){
+                    echo json_encode(['error' => 'Joc finalitzat. Has guanyat!']);
+                }
+                else {echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);}
+                    
                 break;
             }
 
@@ -193,7 +197,7 @@ switch ($accio) {
             'escriptor' => $joc['escriptor'],
             'info' => $joc['info']
         ]);
-        
+
     break;
 
     case 'validateWord':
@@ -300,11 +304,6 @@ switch ($accio) {
             break;
         }
 
-        if ($joc['winner']) {
-            echo json_encode(['error' => 'Joc finalitzat']);
-            break;
-        }
-
         //Mostra nova paraula
         postbotons($game_id, $db, 4);
         echo json_encode([
@@ -313,6 +312,11 @@ switch ($accio) {
             'life_player2' => $updatedGame['life_player2']
         ]);
         break;
+
+        if ($joc['winner']) {
+            echo json_encode(['error' => 'Joc finalitzat']);
+            break;
+        }
 
     case 'heal_click':
         $game_id = $_GET['game_id'];
