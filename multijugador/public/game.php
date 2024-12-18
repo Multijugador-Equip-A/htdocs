@@ -244,14 +244,16 @@ switch ($accio) {
         if ($joc['temps1'] && $joc['temps2']){
             if($joc['temps1'] < $joc['temps2']){
                 guanyar(true, $game_id, $db);
+                postescriptor($game_id, $db, 60);
+                echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
             }
             else{
                 guanyar(false, $game_id, $db);
+                postescriptor($game_id, $db, 60);
+                echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
             }
         }
-
-        echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
-        postescriptor($game_id, $db, 60);
+        
         break;
 
     case 'attack_click':
