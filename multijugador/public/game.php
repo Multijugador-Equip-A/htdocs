@@ -7,6 +7,11 @@ $fitxer = './catala.dic';
 try {
     $db = new PDO('sqlite:../private/games.db');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Configura el mode Write-Ahead Logging (WAL)
+    $db->exec('PRAGMA journal_mode = WAL;');
+
+    // Configura un temps de reintentar (timeout) de 1 segon
+    $db->setAttribute(PDO::ATTR_TIMEOUT, 1);
 } catch (PDOException $e) {
     echo json_encode(['error' => 'Connexió amb la base de dades fallida: ' . $e->getMessage()]);
     exit();
@@ -18,11 +23,13 @@ function imprimir($esJugador1, $game_id, $db){
         $stmt = $db->prepare('UPDATE games SET temps1 = NULL, temps2 = NULL, hihaescriptor = 1, escriptor = 1 WHERE game_id = :game_id');
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
+        $stmt = null; // Tancar el statement
     }
     else{
         $stmt = $db->prepare('UPDATE games SET temps1 = NULL, temps2 = NULL, hihaescriptor = 1, escriptor = 2 WHERE game_id = :game_id');
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
+        $stmt = null; // Tancar el statement
     }
 }
 
@@ -33,15 +40,7 @@ function postbotons($game_id, $db, $quantitat){
     $stmt->bindValue(':game_id', $game_id);
     $stmt->bindValue(':next_word_time', $next_word_time);
     $stmt->execute();
-}
-
-function postescriptor($game_id, $db, $quantitat){
-    $retard = $quantitat;
-    $next_word_time = time() + $retard; //Realment és el temps per clicar els botons
-    $stmt = $db->prepare('UPDATE games SET paraula_visible = 0, next_word_time = :next_word_time, WHERE game_id = :game_id');
-    $stmt->bindValue(':game_id', $game_id);
-    $stmt->bindValue(':next_word_time', $next_word_time);
-    $stmt->execute();
+    $stmt = null; // Tancar el statement
 }
 
 switch ($accio) {
@@ -57,6 +56,7 @@ switch ($accio) {
         $stmt = $db->prepare('SELECT game_id FROM games WHERE player2 IS NULL LIMIT 1');
         $stmt->execute();
         $joc_existent = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
 
         if ($joc_existent) {
             // Unir-se al joc existent com a player2
@@ -65,6 +65,7 @@ switch ($accio) {
             $stmt->bindValue(':player_id', $player_id);
             $stmt->bindValue(':game_id', $game_id);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
         } else {
             // Crear un nou joc com a player1
             $game_id = uniqid();
@@ -72,6 +73,7 @@ switch ($accio) {
             $stmt->bindValue(':game_id', $game_id);
             $stmt->bindValue(':player_id', $player_id);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
         }
 
         echo json_encode(['game_id' => $game_id, 'player_id' => $player_id]);
@@ -83,6 +85,8 @@ switch ($accio) {
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
         $joc = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
+
         $idJugador = $_COOKIE['username'];
         $esJugador1 = $joc['player1'] == $idJugador;
         $esJugador2 = $joc['player2'] == $idJugador;
@@ -107,7 +111,7 @@ switch ($accio) {
             }
             else{
                 $ping = $joc['tempsPAnterior2'] === null ? 0 : $temps_servidor - $joc['tempsPAnterior2'] - 500; // lo que ha tardao en llegar el paquetón 2
-                $stmt_update = $db->prepare('UPDATE games SET latencia1 = :latencia, tempsPAnterior2 = :tempsPAnterior WHERE game_id = :game_id');
+                $stmt_update = $db->prepare('UPDATE games SET latencia2 = :latencia, tempsPAnterior2 = :tempsPAnterior WHERE game_id = :game_id');
                 $stmt_update->bindValue(':game_id', $game_id);
                 $stmt_update->bindValue(':latencia', $ping);
                 $stmt_update->bindValue(':tempsPAnterior', $temps_servidor);
@@ -115,39 +119,35 @@ switch ($accio) {
             }
 
             // Comprovar si algú ha escrit la paraula i qui ha sigut el més ràpid
-            $temps_actual = time();
+            
             if ($joc['player1'] && $joc['player2'] && !$joc['winner']) {
-                $temps_actual = time();
-
-                if ($joc['temps1'] && $joc['temps2']) {
-                    if ($joc['temps1'] < $joc['temps2']) {
-                        // El jugador 1 ha estat més ràpid
-                        imprimir(true, $game_id, $db);
-                    } elseif ($joc['temps2'] < $joc['temps1']) {
-                        // El jugador 2 ha estat més ràpid
-                        imprimir(false, $game_id, $db);
-                    } else {
-                        if ($joc['latencia1'] > $joc['latencia2']){
-                            imprimir(true, $game_id, $db);
-                        }
-                        elseif ($joc['latencia1'] < $joc['latencia2']){
-                            imprimir(true, $game_id, $db);
-                        }
-                            
-                    }
-                }
-
                 if($joc['temps1'] || $joc['temps2']) {
                     if($joc['temps1'] && !$joc['temps2']){
                         $periode = $temps_servidor - $joc['temps1'];
-                        if($periode > $joc['latencia2']*1.1){
+                        if($periode > $joc['latencia2']*1.5){
                             imprimir(true, $game_id, $db);
                         }
                     }
                     elseif($joc['temps2'] && !$joc['temps1']){
                         $periode = $temps_servidor - $joc['temps2'];
-                        if($periode > $joc['latencia1']*1.1){
+                        if($periode > $joc['latencia1']*1.5){
                             imprimir(false, $game_id, $db);
+                        }
+                    }
+                    else{
+                        if ($joc['temps1'] < $joc['temps2']) {
+                            // El jugador 1 ha estat més ràpid
+                            imprimir(true, $game_id, $db);
+                        } elseif ($joc['temps2'] < $joc['temps1']) {
+                            // El jugador 2 ha estat més ràpid
+                            imprimir(false, $game_id, $db);
+                        } else {
+                            if ($joc['latencia1'] > $joc['latencia2']){
+                                imprimir(true, $game_id, $db);
+                            }
+                            elseif ($joc['latencia1'] < $joc['latencia2']){
+                                imprimir(true, $game_id, $db);
+                            }
                         }
                     }
                 } 
@@ -159,23 +159,14 @@ switch ($accio) {
                 $stmt->bindValue(':player_id', $joc['player1']);
                 $stmt->bindValue(':game_id', $game_id);
                 $stmt->execute();
-                if($esJugador1){
-                    echo json_encode(['error' => 'Joc finalitzat. Has guanyat!']);
-                }
-                else {
-                    echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);}
-                }
+                $stmt = null; // Tancar el statement
+            }
             elseif ($joc['life_player1'] <= 0) {
                 $stmt = $db->prepare('UPDATE games SET winner = :player_id WHERE game_id = :game_id');
                 $stmt->bindValue(':player_id', $joc['player2']);
                 $stmt->bindValue(':game_id', $game_id);
                 $stmt->execute();
-                if(!$esJugador1){
-                    echo json_encode(['error' => 'Joc finalitzat. Has guanyat!']);
-                }
-                else {
-                    echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);
-                }
+                $stmt = null; // Tancar el statement
             }
 
             if (!$joc) {
@@ -183,6 +174,7 @@ switch ($accio) {
                 break;
             }
 
+            $temps_actual = time();
             if (!$joc['paraula_visible'] && ($joc['next_word_time'] === null || $temps_actual >= $joc['next_word_time'])) {
 
                 // Llegeix totes les línies del fitxer en un array
@@ -231,30 +223,36 @@ switch ($accio) {
         $stmt->bindValue(':word', $word);
         $stmt->execute();
         $joc = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
 
-        $temps = $_GET['temps'];
-
+        
         if (!$joc['word']) {
             echo json_encode(['error' => 'No hi ha cap paraula']);
             break;
         }
-
+        
         if($joc['hihaescriptor'] == 1){
             echo json_encode(['error' => 'L\'altre jugador està pensant']);
             break;
         }
+        
+        $temps_servidor = floor(microtime(true) * 1000);
 
         // Determinar quin jugador ha entrat la paraula correcta i actualitzar vida
         if ($joc['player1'] === $player_id && $joc['word'] === $word) {
+            $temps = $temps_servidor - $joc['latencia1'];
             $stmt = $db->prepare('UPDATE games SET temps1 = :temps1 WHERE game_id = :game_id');
             $stmt->bindValue(':game_id', $game_id);
             $stmt->bindValue(':temps1', $temps);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
         } elseif ($joc['player2'] === $player_id && $joc['word'] === $word) {
+            $temps = $temps_servidor - $joc['latencia2'];
             $stmt = $db->prepare('UPDATE games SET temps2 = :temps2 WHERE game_id = :game_id');
             $stmt->bindValue(':game_id', $game_id);
             $stmt->bindValue(':temps2', $temps);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
         } else {
             echo json_encode(['error' => 'Jugador invàlid']);
             break;
@@ -264,20 +262,17 @@ switch ($accio) {
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
         $joc = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
 
+        postbotons($game_id, $db, 60);
 
-        if ($joc['temps1'] && $joc['temps2']){
-            if($joc['temps1'] < $joc['temps2']){
-                imprimir(true, $game_id, $db);
-                postescriptor($game_id, $db, 60);
-                echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
-            }
-            else{
-                imprimir(false, $game_id, $db);
-                postescriptor($game_id, $db, 60);
-                echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
-            }
-        }
+        echo json_encode([
+            'hihaescriptor' => $joc['hihaescriptor'], 
+            'escriptor' => $joc['escriptor'], 
+            'temps1' => $joc['temps1'],
+            'temps2' => $joc['temps2'],
+            'temps_servidor' => time()
+        ]);
         
         break;
 
@@ -289,23 +284,27 @@ switch ($accio) {
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
         $joc = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
 
         // Logica de vida i atac
         if ($player_id == $joc['player1']) {
             $stmt = $db->prepare('UPDATE games SET life_player2 = life_player2 - player1_damage WHERE game_id = :game_id');
             $stmt->bindValue(':game_id', $game_id);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
         }
         else {
             $stmt = $db->prepare('UPDATE games SET life_player1 = life_player1 - player2_damage WHERE game_id = :game_id');
             $stmt->bindValue(':game_id', $game_id);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
         }
         
         $stmt = $db->prepare('SELECT life_player1, life_player2 FROM games WHERE game_id = :game_id');
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
         $updatedGame = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
 
         // Comprovar si hi ha un guanyador
         if ($joc['life_player2'] <= 0) {
@@ -313,11 +312,15 @@ switch ($accio) {
             $stmt->bindValue(':player_id', $joc['player1']);
             $stmt->bindValue(':game_id', $game_id);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
+
         } elseif ($joc['life_player1'] <= 0) {
             $stmt = $db->prepare('UPDATE games SET winner = :player_id WHERE game_id = :game_id');
             $stmt->bindValue(':player_id', $joc['player2']);
             $stmt->bindValue(':game_id', $game_id);
             $stmt->execute();
+            $stmt = null; // Tancar el statement
+
         }
 
         if (!$joc) {
@@ -347,6 +350,7 @@ switch ($accio) {
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
         $joc = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
 
         
 
@@ -360,6 +364,7 @@ switch ($accio) {
 
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
+        $stmt = null; // Tancar el statement
 
         if (!$joc) {
             echo json_encode(['error' => 'Joc no trobat']);
@@ -384,6 +389,7 @@ switch ($accio) {
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
         $joc = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null; // Tancar el statement
 
         // Logica de vida i blocqueig
         if ($player_id == $joc['player1']) {
@@ -395,6 +401,7 @@ switch ($accio) {
 
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
+        $stmt = null; // Tancar el statement
 
         if (!$joc) {
             echo json_encode(['error' => 'Joc no trobat']);
@@ -419,7 +426,8 @@ switch ($accio) {
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
         $joc = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+        $stmt = null; // Tancar el statement
+
         // Logica de vida i blocqueig
         if ($player_id == $joc['player1']) {
             $stmt = $db->prepare('UPDATE games SET player1_damage = player1_damage + 1 WHERE game_id = :game_id');
@@ -430,6 +438,8 @@ switch ($accio) {
     
         $stmt->bindValue(':game_id', $game_id);
         $stmt->execute();
+        $stmt = null; // Tancar el statement
+
 
         if (!$joc) {
             echo json_encode(['error' => 'Joc no trobat']);

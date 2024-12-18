@@ -230,13 +230,18 @@ if (isset($parameters['page'])) {
     require 'phpmailer/src/SMTP.php';
 }
 else { // home
-    
-    $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
-    $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
-    $configuration['{DISPLAY_BUTTON}'] = 'block';
-    $configuration['{NEXT_URL}'] = '/?page=next';
-    $configuration['{NEXT_TEXT}'] = 'Avança';
-    $configuration['{DISPLAY_REGISTER}'] = 'none';
+    if(!isset($_COOKIE['username'])){ // No he iniciat sessió
+        $template = 'login';
+        $configuration['{LOGIN_USERNAME}'] = '';
+    }
+    else{
+        $configuration['{LOGIN_LOGOUT_TEXT}'] = 'Tancar "sessió"';
+        $configuration['{LOGIN_LOGOUT_URL}'] = '/?page=logout';
+        $configuration['{DISPLAY_BUTTON}'] = 'block';
+        $configuration['{NEXT_URL}'] = '/?page=next';
+        $configuration['{NEXT_TEXT}'] = 'Avança';
+        $configuration['{DISPLAY_REGISTER}'] = 'none';
+    }
 }
 
 

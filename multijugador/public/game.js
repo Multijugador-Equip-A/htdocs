@@ -140,10 +140,10 @@ function handle_game(joc) {
     if (guanyador) {
         if (guanyador === idJugador) {
             textEstat.innerText = 'Has guanyat!';
-            alert("Enhorabona! Has guanyat el joc! 🎉");
+            alert("Enhorabona! Has guanyat el joc! 🎉💋");
         } else {
             textEstat.innerText = 'Has perdut!';
-            alert("Ho sentim, has perdut el joc. 😔");
+            alert("Ho sentim, has perdut el joc. 😔💋");
         }
         disableButton(); // Desactivar els botons perquè el joc ha acabat
         paraula.disabled = true; // Desactivar l'entrada de paraules
@@ -177,6 +177,8 @@ function handle_game(joc) {
 
         timer.innerText = "";
 
+        disableButton();
+
     } else {
         paraula.value = "";
         mostraParaula.innerText = "";
@@ -203,11 +205,12 @@ function comprovarEstatDelJoc() {
         .then(response => {
             //console.log(response);
             if (!response.ok){
+                console.log(response);
                 console.error(`Response failed: ${response.status}` ,{response})
-                return}
+                return
+            }
             response.json().then(joc => { 
                 if (joc.info != '') console.log(joc.info);
-                console.log("Fent handle:")
                 handle_game(joc);
             });
         })
