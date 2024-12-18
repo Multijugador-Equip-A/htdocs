@@ -250,9 +250,8 @@ switch ($accio) {
             }
         }
 
-        postescriptor($game_id, $db, 60);
         echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
-        
+        postescriptor($game_id, $db, 60);
         break;
 
     case 'attack_click':
