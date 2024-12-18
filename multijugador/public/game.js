@@ -172,7 +172,6 @@ function handle_game(joc) {
 
         timer.innerText = "";
 
-        disableButton();
     } else {
         paraula.value = "";
         mostraParaula.innerText = "";
@@ -187,9 +186,9 @@ function handle_game(joc) {
         }
     }
 
-
     setTimeout(comprovarEstatDelJoc, 500);
 }
+
 // Comprovar l'estat del joc cada mig segon i actualitzar la vida dels jugadors
 function comprovarEstatDelJoc() {
 	var now = new Date();

@@ -13,7 +13,7 @@ try {
 }
 
 $accio = isset($_GET['action']) ? $_GET['action'] : '';
-function guanyar($esJugador1, $game_id, $db){
+function imprimir($esJugador1, $game_id, $db){
     if($esJugador1){
         $stmt = $db->prepare('UPDATE games SET temps1 = NULL, temps2 = NULL, hihaescriptor = 1, escriptor = 1 WHERE game_id = :game_id');
         $stmt->bindValue(':game_id', $game_id);
@@ -123,17 +123,17 @@ switch ($accio) {
                     if($joc['temps1'] && !$joc['temps2']){
                         $periode = $temps_servidor - $joc['temps1'];
                         if($periode > $joc['latencia2']*1.5){
-                            guanyar(true, $game_id, $db);
+                            imprimir(true, $game_id, $db);
                         }
                     }
                     elseif($joc['temps2'] && !$joc['temps1']){
                         $periode = $temps_servidor - $joc['temps2'];
                         if($periode > $joc['latencia1']*1.5){
-                            guanyar(false, $game_id, $db);
+                            imprimir(false, $game_id, $db);
                         }
                     }
                 }
-
+            }
                 
             // Comprovar si hi ha un guanyador
             if ($joc['life_player2'] <= 0) {
@@ -193,7 +193,7 @@ switch ($accio) {
             'escriptor' => $joc['escriptor'],
             'info' => $joc['info']
         ]);
-    }
+        
     break;
 
     case 'validateWord':
@@ -243,12 +243,12 @@ switch ($accio) {
 
         if ($joc['temps1'] && $joc['temps2']){
             if($joc['temps1'] < $joc['temps2']){
-                guanyar(true, $game_id, $db);
+                imprimir(true, $game_id, $db);
                 postescriptor($game_id, $db, 60);
                 echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
             }
             else{
-                guanyar(false, $game_id, $db);
+                imprimir(false, $game_id, $db);
                 postescriptor($game_id, $db, 60);
                 echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
             }
