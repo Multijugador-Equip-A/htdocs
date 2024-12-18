@@ -171,7 +171,6 @@ function handle_game(joc) {
         mostraParaula.style.color = 'black';
 
         timer.innerText = "";
-
     } else {
         paraula.value = "";
         mostraParaula.innerText = "";
