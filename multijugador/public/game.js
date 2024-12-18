@@ -136,12 +136,17 @@ function handle_game(joc) {
 
     if (joc.time_left) timer.innerText = joc.time_left;
 
+    // Comprovar si hi ha un guanyador
     if (guanyador) {
         if (guanyador === idJugador) {
             textEstat.innerText = 'Has guanyat!';
+            alert("Enhorabona! Has guanyat el joc! 🎉");
         } else {
             textEstat.innerText = 'Has perdut!';
+            alert("Ho sentim, has perdut el joc. 😔");
         }
+        disableButton(); // Desactivar els botons perquè el joc ha acabat
+        paraula.disabled = true; // Desactivar l'entrada de paraules
         return;
     }
 
