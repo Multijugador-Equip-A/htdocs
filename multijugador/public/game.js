@@ -147,14 +147,14 @@ function handle_game(joc) {
 
     if (joc.player1 === idJugador) {
         if (joc.player2) {
-            textEstat.innerText = `Joc en curs...   Ets el jugador ${joc.player1}`;
+            textEstat.innerText = `Joc en curs...   Ets el jugador 1 ${joc.player1}`;
             divJoc.style.display = 'block';
         } else {
-            textEstat.innerText = `Ets el ${joc.player1}. Esperant el Jugador 2...`;
+            textEstat.innerText = `Ets el ${joc.player1}. Esperant al Jugador 2...`;
             identitat = 1;
         }
     } else if (joc.player2 === idJugador) {
-        textEstat.innerText = `Joc en curs...   Ets el jugador ${joc.player2}`;
+        textEstat.innerText = `Joc en curs...   Ets el jugador 2 ${joc.player2}`;
         divJoc.style.display = 'block';
         identitat = 2;
     } else {
@@ -171,6 +171,7 @@ function handle_game(joc) {
         mostraParaula.style.color = 'black';
 
         timer.innerText = "";
+
     } else {
         paraula.value = "";
         mostraParaula.innerText = "";
@@ -201,25 +202,10 @@ function comprovarEstatDelJoc() {
                 return}
             response.json().then(joc => { 
                 if (joc.info != '') console.log(joc.info);
+                console.log("Fent handle:")
                 handle_game(joc);
             });
         })
-        .then(data => {            
-            console.log(data);
-            //if (data.error) {
-            //    alert(data.error);
-            //    return;
-            //}
-            if(data.hihaescriptor){
-                if(data.escriptor == identitat){
-                    enableButton();
-                }
-                else{
-                    disableButton();                            
-                }
-            }
-        });
-        
 }
 
 function verificaParaula(paraula) {
