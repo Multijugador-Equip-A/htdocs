@@ -165,7 +165,7 @@ switch ($accio) {
                 else {
                     echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);}
                 }
-            } elseif ($joc['life_player1'] <= 0) {
+            elseif ($joc['life_player1'] <= 0) {
                 $stmt = $db->prepare('UPDATE games SET winner = :player_id WHERE game_id = :game_id');
                 $stmt->bindValue(':player_id', $joc['player2']);
                 $stmt->bindValue(':game_id', $game_id);
