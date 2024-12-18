@@ -140,13 +140,13 @@ switch ($accio) {
                 if($joc['temps1'] || $joc['temps2']) {
                     if($joc['temps1'] && !$joc['temps2']){
                         $periode = $temps_servidor - $joc['temps1'];
-                        if($periode > $joc['latencia2']*1.5){
+                        if($periode > $joc['latencia2']*1.1){
                             imprimir(true, $game_id, $db);
                         }
                     }
                     elseif($joc['temps2'] && !$joc['temps1']){
                         $periode = $temps_servidor - $joc['temps2'];
-                        if($periode > $joc['latencia1']*1.5){
+                        if($periode > $joc['latencia1']*1.1){
                             imprimir(false, $game_id, $db);
                         }
                     }
@@ -159,24 +159,27 @@ switch ($accio) {
                 $stmt->bindValue(':player_id', $joc['player1']);
                 $stmt->bindValue(':game_id', $game_id);
                 $stmt->execute();
-            } elseif ($joc['life_player1'] <= 0) {
+                if($esJugador1){
+                    echo json_encode(['error' => 'Joc finalitzat. Has guanyat!']);
+                }
+                else {
+                    echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);}
+                }
+            elseif ($joc['life_player1'] <= 0) {
                 $stmt = $db->prepare('UPDATE games SET winner = :player_id WHERE game_id = :game_id');
                 $stmt->bindValue(':player_id', $joc['player2']);
                 $stmt->bindValue(':game_id', $game_id);
                 $stmt->execute();
+                if(!$esJugador1){
+                    echo json_encode(['error' => 'Joc finalitzat. Has guanyat!']);
+                }
+                else {
+                    echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);}
+                }
             }
 
             if (!$joc) {
                 echo json_encode(['error' => 'Joc no trobat']);
-                break;
-            }
-
-            if ($joc['winner']) {
-                if ($joc['player_id'] == $joc[winner]){
-                    echo json_encode(['error' => 'Joc finalitzat. Has guanyat!']);
-                }
-                else {echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);}
-                    
                 break;
             }
 
