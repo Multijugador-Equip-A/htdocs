@@ -162,7 +162,7 @@ function handle_game(joc) {
         divJoc.style.display = 'block';
     }
 
-    //          Gestionar la visualització de la paraula a escriure
+    // Gestionar la visualització de la paraula a escriure
     if (joc.visible == 1) {
         paraula.placeholder = joc.word;
         paraula.style.color = 'Black';

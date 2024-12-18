@@ -35,6 +35,15 @@ function postbotons($game_id, $db, $quantitat){
     $stmt->execute();
 }
 
+function postescriptor($game_id, $db, $quantitat){
+    $retard = $quantitat;
+    $next_word_time = time() + $retard; //Realment és el temps per clicar els botons
+    $stmt = $db->prepare('UPDATE games SET paraula_visible = 0, next_word_time = :next_word_time, WHERE game_id = :game_id');
+    $stmt->bindValue(':game_id', $game_id);
+    $stmt->bindValue(':next_word_time', $next_word_time);
+    $stmt->execute();
+}
+
 switch ($accio) {
     case 'join':
         if (!isset($_COOKIE['username'])) {
@@ -105,7 +114,7 @@ switch ($accio) {
                 $stmt_update->execute();
             }
 
-            // Comprovar si algu ha escrit la paraula i qui ha sigut el més ràpid
+            // Comprovar si algú ha escrit la paraula i qui ha sigut el més ràpid
             $temps_actual = time();
             if ($joc['player1'] && $joc['player2'] && !$joc['winner']) {
                 $temps_actual = time();
@@ -212,7 +221,6 @@ switch ($accio) {
 
         // Determinar quin jugador ha entrat la paraula correcta i actualitzar vida
         if ($joc['player1'] === $player_id && $joc['word'] === $word) {
-            // $next_word_time = time() + 60;
             $stmt = $db->prepare('UPDATE games SET temps1 = :temps1 WHERE game_id = :game_id');
             $stmt->bindValue(':game_id', $game_id);
             $stmt->bindValue(':temps1', $temps);
@@ -242,8 +250,9 @@ switch ($accio) {
             }
         }
 
-        postbotons($game_id, $db, 60);
+        postescriptor($game_id, $db, 60);
         echo json_encode(['hihaescriptor' => $joc['hihaescriptor'], 'escriptor' => $joc['escriptor']]);
+        
         break;
 
     case 'attack_click':
