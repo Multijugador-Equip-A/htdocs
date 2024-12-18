@@ -174,7 +174,7 @@ switch ($accio) {
                     echo json_encode(['error' => 'Joc finalitzat. Has guanyat!']);
                 }
                 else {
-                    echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);}
+                    echo json_encode(['error' => 'Joc finalitzat. Has perdut!']);
                 }
             }
 
