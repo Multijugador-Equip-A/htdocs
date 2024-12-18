@@ -204,6 +204,21 @@ function comprovarEstatDelJoc() {
                 handle_game(joc);
             });
         })
+        .then(data => {            
+            console.log(data);
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            if(data.hihaescriptor){
+                if(data.escriptor == identitat){
+                    enableButton();
+                }
+                else{
+                    disableButton();                            
+                }
+            }
+        });
         
 }
 
